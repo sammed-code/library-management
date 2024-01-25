@@ -1,9 +1,5 @@
 const express = require('express');
 
-// JSON data import
-const {users} = require('./data/users.json');
-const {books} = require('./data/books.json');
-
 // Importing routes
 const userRouter = require('./routes/users');
 const booksRouter = require('./routes/books');
@@ -20,7 +16,7 @@ app.get("/", (req, res) => {
 })
 
 app.use("/users", userRouter);
-// app.use("/books", booksRouter);
+app.use("/books", booksRouter);
 
 app.all("*", (req, res) => {
     res.status(500).json({
