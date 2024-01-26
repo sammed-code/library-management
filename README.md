@@ -43,3 +43,9 @@ GET: Get all issued books with fine
 
     -> If the user has an issued and the issued book is to be returned by 2 weeks.
     If he misses the date of renewal/return and subscription also ended, then he needs to pay a penalty of 100Rs.
+
+
+MVC Architecture
+M: Model(Tells us the structure of Mongodb Collection)
+v: View(UI)
+C: Controller(Brain/Logic of a router)
