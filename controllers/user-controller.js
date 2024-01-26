@@ -34,3 +34,115 @@ exports.getSingleUserById = async (req, res) => {
     })
 };
 
+exports.deleteUser = async (req, res) => {
+    const {id} = req.params;
+
+    const user = await UserModal.deleteOne({
+        _id: id
+    })
+
+    if (!user) {
+        return res.status(404).json({
+            success: false,
+            message: "User Not Found"
+        })
+    }
+
+    return res.status(202).json({
+        success: true,
+        message: "Deleted The User Successfully"
+    })
+};
+
+exports.updateUserById = async (req, res) => {
+    const {id} = req.params;
+    const {data} = req.body;
+
+    const updatedUser = await UserModal.findOneAndUpdate({
+        _id: id
+    }, {
+        $set: {
+            ...data
+        }
+    }, {
+        new: true
+    })
+
+    return res.status(200).json({
+        success: true,
+        data: updatedUser
+    })
+};
+
+exports.addNewUser = async (req, res) => {
+    const {id, name, surname, email, subscriptionType, subscriptionDate} = req.body;
+
+    const newUser = await UserModal.create({
+        name,
+        surname,
+        email,
+        subscriptionType,
+        subscriptionDate
+    });
+
+    return res.status(201).json({
+        success: true,
+        message: newUser
+    })
+};
+
+exports.getSubscriptionDetailsById = async (req, res) => {
+    const {id} = req.params;
+    const user = await UserModal.findById(id);
+
+    if (!user) {
+        return res.status(404).json({
+            success: false,
+            message: "User Not Found"
+        })
+    }
+
+    const getDateInDays = (data = "") => {
+        let date;
+        if (date === "") {
+            date = new Date();
+        }
+        else {
+            date = new Date(data);
+        }
+        let days = Math.floor(date/1000*60*60*24);
+        return days;
+    };
+
+    const subscriptionType = (date) => {
+        if (user.subscriptionType === "Basic") {
+            date += 91;
+        }
+        else if (user.subscriptionType === "Standard") {
+            date += 182;
+        }
+        else if (user.subscriptionType === "Premium") {
+            date += 365;
+        }
+        return date;
+    };
+
+    // Subscription expiration calculation
+    // Jan 1 1970 // milliseconds
+    let returnDate = getDateInDays(user.returnDate);
+    let currentDate = getDateInDays();
+    let subscriptionDate = getDateInDays(user.subscriptionDate);
+    let subscriptionExpiration = subscriptionType(subscriptionDate);
+
+    const data = {
+        ...user,
+        subscriptionExpired: subscriptionExpiration < currentDate,
+        daysLeftForExpiration: subscriptionExpiration <= currentDate ? 0 : subscriptionExpiration - currentDate,
+        fine: returnDate < currentDate ? (subscriptionExpiration <= currentDate ? 200 : 100) : 0
+    }
+
+    return res.status(200).json({
+        success: true,
+        data
+    })
+};
