@@ -2,6 +2,7 @@ const express = require('express');
 
 // JSON data import
 const {users} = require('../data/users.json');
+const { getAllUsers, getSingleUserById } = require('../controllers/user-controller');
 
 const router = express.Router();
 
@@ -12,12 +13,13 @@ const router = express.Router();
  * Access: Public
  * Parameters: None
  */
-router.get("/", (req, res) => {
-    res.status(200).json({
-        success: true,
-        data: users
-    })
-})
+// router.get("/", (req, res) => {
+//     res.status(200).json({
+//         success: true,
+//         data: users
+//     })
+// })
+router.get("/", getAllUsers)
 
 /**
  * Route: /users/:id
@@ -26,20 +28,21 @@ router.get("/", (req, res) => {
  * Access: Public
  * Parameters: ID
  */
-router.get("/:id", (req, res) => {
-    const {id} = req.params;
-    const user = users.find((each) => each.id === id);
-    if (!user) {
-        return res.status(404).json({
-            success: false,
-            message: "User Not Found"
-        })
-    }
-    return res.status(200).json({
-        success: true,
-        message: user
-    })
-})
+// router.get("/:id", (req, res) => {
+//     const {id} = req.params;
+//     const user = users.find((each) => each.id === id);
+//     if (!user) {
+//         return res.status(404).json({
+//             success: false,
+//             message: "User Not Found"
+//         })
+//     }
+//     return res.status(200).json({
+//         success: true,
+//         message: user
+//     })
+// })
+router.get("/:id", getSingleUserById)
 
 /**
  * Route: /users
